@@ -68,7 +68,14 @@ class PropelLogger implements LoggerInterface
 
         if (null !== $this->stopwatch) {
             $trace = debug_backtrace();
-            $method = $trace[3]['function'];
+
+            if (strpos($trace[2]['file'], 'propel1/runtime') !== false) {
+                $traceKey = 4;
+            } else {
+                $traceKey = 3;
+            }
+
+            $method = $trace[$traceKey]['function'];
 
             $watch = 'Propel Query '.(count($this->queries)+1);
             if ('prepare' === $method) {
@@ -82,13 +89,11 @@ class PropelLogger implements LoggerInterface
             }
         }
 
-        // $trace[2] has no 'object' key if an exception is thrown while executing a query
-        if ($add && isset($event) && isset($trace[2]['object'])) {
-            $connection = $trace[2]['object'];
+        if ($add && isset($event)) {
 
             $this->queries[] = array(
                 'sql'           => $message,
-                'connection'    => $connection->getName(),
+                'connection'    => null,
                 'time'          => $event->getDuration() / 1000,
                 'memory'        => $event->getMemory(),
                 'stackTrace'    => $stackTrace,
