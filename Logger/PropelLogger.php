@@ -12,6 +12,7 @@ namespace Propel\Bundle\PropelBundle\Logger;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
+use Psr\Log\LogLevel;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\VarDumper\Caster\TraceStub;
 
@@ -96,6 +97,22 @@ class PropelLogger implements LoggerInterface
         }
 
         $this->logger->log($level, $message, $context);
+    }
+
+    /**
+     * propel1 compatible mode
+     */
+    public function crit($message)
+    {
+        $this->log(LogLevel::CRITICAL, $message);
+    }
+
+    /**
+     * propel1 compatible mode
+     */
+    public function err($message)
+    {
+        $this->log(LogLevel::ERROR, $message);
     }
 
     public function getQueries()
